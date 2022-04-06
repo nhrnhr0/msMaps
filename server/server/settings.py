@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-u$heg@7f7h0lhyw(zx%@f9v=2g*n_^3)_t*tcipyfs6n7%9_4(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['maps.boost-pop.com']
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
