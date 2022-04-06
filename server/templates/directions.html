@@ -22,7 +22,6 @@
   let selected = [];
   document.getElementById('submit-btn').addEventListener('click', (e)=> {
     e.preventDefault();
-    debugger;
     // selected = גבולות: _.bf {lat: ƒ, lng: ƒ} רביבים: _.bf {lat: ƒ, lng: ƒ} שדה-בוקר: _.bf {lat: ƒ, lng: ƒ}
     let selectedArr = Object.entries(selected);
     let entries = [];
@@ -36,13 +35,14 @@
     let origin = entries[0].lat + ',' + entries[0].lng;
     let destination = entries[entries.length - 1].lat + ',' + entries[entries.length - 1].lng;
     let waypoints = [];
+    debugger;
     for(let i = 1; i < entries.length; i++) {
       // TODO: continue from here
-      waypoints.push({});
+      waypoints.push(entries[i].lat + ',' + entries[i].lng);
     }
-    let waypointsStr = waypoints.map(waypoint => waypoint.lat + ',' + waypoint.lng).join('|');
+    let waypoints_str = waypoints.join('|');
     
-    let url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&waypoints=${waypoints_str}`;
+    let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints_str}&travelmode=driving`;
     document.getElementById('href-display').innerHTML = `<a href="${url}">${url}</a>`;
     // https://www.google.com/maps/dir/?api=1&origin=Space+Needle+Seattle+WA&destination=Pike+Place+Market+Seattle+WA&travelmode=driving
   });
