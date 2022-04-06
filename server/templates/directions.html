@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+  <div id="hidden-points-holder" data-mydata="{{points}}"></div>
+    <div id="map"></div>
+    <form>
+      <h1>חפש מסלול בין נקודות</h1>
+      <div id="selected-markers"></div>
+      <button id="submit-btn" type="button">חפש מסלול</button>
+    </form>
+    <div id="href-display"></div>
+</body>
+<script src="https://maps.googleapis.com/maps/api/js?key={{MAPS_API_KEY}}&callback=initMap&v=weekly" async></script>
+<script>
+  let all_markers = [];
+  let selected = [];
+  document.getElementById('submit-btn').addEventListener('click', (e)=> {
+    e.preventDefault();
+    debugger;
+    // selected = גבולות: _.bf {lat: ƒ, lng: ƒ} רביבים: _.bf {lat: ƒ, lng: ƒ} שדה-בוקר: _.bf {lat: ƒ, lng: ƒ}
+    let selectedArr = Object.entries(selected);
+    let entries = [];
+    for(let i = 0; i < selectedArr.length; i++) {
+      let lat = selectedArr[i][1].lat();
+      let lng = selectedArr[i][1].lng();
+      let name = selectedArr[i][0];
+      entries.push({lat, lng, name});
+    }
+
+    let origin = entries[0].lat + ',' + entries[0].lng;
+    let destination = entries[entries.length - 1].lat + ',' + entries[entries.length - 1].lng;
+    let waypoints = [];
+    for(let i = 1; i < entries.length; i++) {
+      // TODO: continue from here
+      waypoints.push({});
+    }
+    let waypointsStr = waypoints.map(waypoint => waypoint.lat + ',' + waypoint.lng).join('|');
+    
+    let url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&waypoints=${waypoints_str}`;
+    document.getElementById('href-display').innerHTML = `<a href="${url}">${url}</a>`;
+    // https://www.google.com/maps/dir/?api=1&origin=Space+Needle+Seattle+WA&destination=Pike+Place+Market+Seattle+WA&travelmode=driving
+  });
+// Initialize and add the map
+async function initMap() {
+  // The location of Uluru
+  const center = { lat: 31.20417600, lng: 34.53346300 };
+  // The map, centered at Uluru
+  const map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 10,
+    center: center,
+  });
+  // The marker, positioned at Uluru
+  let response = await fetch('api/get_all_points');
+  let points = (await response.json()).points;
+  console.log('points:', points)
+
+  for(let i = 0; i < points.length;i++) {
+    let point = points[i];
+    const marker = new google.maps.Marker({
+      position: {lat: parseFloat(point.lat), lng: parseFloat(point.lng)},
+      map: map,
+      title: point.name
+    })
+    all_markers.push(marker);
+  }
+
+  for(let i = 0; i < all_markers.length; i++) {
+    all_markers[i].addListener("click", (e) => {
+      let pos = all_markers[i].getPosition();
+      let name = all_markers[i].title;
+      selected[name] = pos;
+      selectedListChanged();
+    });
+  }
+}
+
+function selectedListChanged() {
+  let html = document.createElement('ul');
+  let mainWraper = document.getElementById('selected-markers');
+  
+  for (const [key, value] of Object.entries(selected)) {
+    let name = key;
+    let pos = [value.lat(), value.lng()]
+    //let el = `<li>${name}</li>`
+    let liEl = document.createElement('li');
+    liEl.innerHTML = `${name}`
+    liEl.addEventListener('click', (e)=> {
+      console.log(e);
+      let nameToRemove = e.target.innerHTML;
+      delete selected[nameToRemove];
+      selectedListChanged();
+    });
+    html.appendChild(liEl);
+  }
+  mainWraper.innerHTML = ``;
+  mainWraper.appendChild(html);
+
+}
+</script>
+<style>
+/* Set the size of the div element that contains the map */
+#map {
+  height: 75vh;
+  /* The height is 400 pixels */
+  width: 100%;
+  /* The width is the width of the web page */
+}
+</style>
+</html>
