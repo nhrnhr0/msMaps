@@ -65,7 +65,8 @@ async function initMap() {
     const marker = new google.maps.Marker({
       position: {lat: parseFloat(point.lat), lng: parseFloat(point.lng)},
       map: map,
-      title: point.name
+      title: point.name,
+      icon: point.marker
     })
     all_markers.push(marker);
   }
